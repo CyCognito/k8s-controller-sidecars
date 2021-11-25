@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	core_v1 "k8s.io/api/core/v1"
 
 	"k8s.io/client-go/tools/clientcmd"
@@ -35,7 +35,7 @@ func sendShutdownSignal(pod *core_v1.Pod, containers set.Set) {
 	// Multiple arguments must be provided as separate "command" parameters
 	// The first one is added automatically.
 	// Todo: Update requestFromConfig to handle this better
-	command := "bash&command=-c&command=kill+-s+TERM+1"  // "kill -s TERM 1"
+	command := "bash&command=-c&command=kill+-s+TERM+1" // "kill -s TERM 1"
 	//command = "ls"
 	// creates the connection
 	config, err := clientcmd.BuildConfigFromFlags("", "")
@@ -72,7 +72,7 @@ func (t *SidecarShutdownHandler) ObjectCreated(obj interface{}) {
 	// assert the type to a Pod object to pull out relevant data
 	pod := obj.(*core_v1.Pod)
 
-	sidecarsString, exists := pod.Annotations["riskified.com/sidecars"]
+	sidecarsString, exists := pod.Annotations["sidecar-terminator/sidecars"]
 
 	if exists {
 		log.Infof("    ResourceTrackable: true")

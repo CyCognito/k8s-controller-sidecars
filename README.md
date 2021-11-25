@@ -34,7 +34,7 @@ spec:
       template:
         metadata:
           annotations:
-            riskified.com/sidecars: istio-proxy
+            sidecar-terminator/sidecars: istio-proxy
         spec:
           restartPolicy: Never
           containers:
