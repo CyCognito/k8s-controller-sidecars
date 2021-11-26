@@ -1,8 +1,6 @@
-
 // The majority of this file was borrowed from https://github.com/rmohr/kubernetes-custom-exec
 
 package main
-
 
 import (
 	"bytes"
@@ -10,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"k8s.io/client-go/rest"
@@ -75,6 +74,7 @@ func roundTripperFromConfig(config *rest.Config) (http.RoundTripper, error) {
 		Dialer: dialer,
 	}
 
+	config.Timeout = 60 * time.Minute
 	// Make sure we inherit all relevant security headers
 	return rest.HTTPWrappersForConfig(config, rt)
 }
