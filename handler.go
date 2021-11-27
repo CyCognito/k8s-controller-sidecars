@@ -35,7 +35,7 @@ func sendShutdownSignal(pod *core_v1.Pod, containers set.Set) {
 	// Multiple arguments must be provided as separate "command" parameters
 	// The first one is added automatically.
 	// Todo: Update requestFromConfig to handle this better
-	command := "sh&command=-c&command=kill+-s+TERM+1" // "kill -s TERM 1"
+	command := "sh&command=-c&command=touch+/tmp/should_exit;sleep+2;kill+-s+TERM+1" // "touch /tmp/should_exit;sleep 2;kill -s TERM 1"
 	//command = "ls"
 	// creates the connection
 	config, err := clientcmd.BuildConfigFromFlags("", "")
@@ -82,16 +82,18 @@ func (t *SidecarShutdownHandler) ObjectCreated(obj interface{}) {
 
 		return
 	}
+	log.Infof("    ResourceVersion: %s", pod.ObjectMeta.ResourceVersion)
+	log.Infof("    NodeName: %s", pod.Spec.NodeName)
+	log.Infof("    Phase: %s", pod.Status.Phase)
+	if pod.Status.Phase == core_v1.PodPending {
+		return
+	}
 
 	sidecars := set.NewSet()
 
 	for _, s := range strings.Split(sidecarsString, ",") {
 		sidecars.Add(s)
 	}
-
-	log.Infof("    ResourceVersion: %s", pod.ObjectMeta.ResourceVersion)
-	log.Infof("    NodeName: %s", pod.Spec.NodeName)
-	log.Infof("    Phase: %s", pod.Status.Phase)
 
 	allContainers := set.NewSet()
 	runningContainers := set.NewSet()

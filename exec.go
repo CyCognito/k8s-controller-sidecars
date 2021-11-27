@@ -31,6 +31,10 @@ func (d *WebsocketRoundTripper) RoundTrip(r *http.Request) (*http.Response, erro
 
 func WebsocketCallback(ws *websocket.Conn, resp *http.Response, err error) error {
 
+	deadline := time.Now().Add(time.Minute)
+	_ = ws.SetWriteDeadline(deadline)
+	_ = ws.SetReadDeadline(deadline)
+
 	if err != nil {
 		if resp != nil && resp.StatusCode != http.StatusOK {
 			buf := new(bytes.Buffer)
@@ -74,7 +78,7 @@ func roundTripperFromConfig(config *rest.Config) (http.RoundTripper, error) {
 		Dialer: dialer,
 	}
 
-	config.Timeout = 60 * time.Minute
+	config.Timeout = time.Minute
 	// Make sure we inherit all relevant security headers
 	return rest.HTTPWrappersForConfig(config, rt)
 }
